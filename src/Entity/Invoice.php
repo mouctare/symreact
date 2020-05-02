@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\InvoiceRepository")
@@ -15,6 +16,7 @@ use ApiPlatform\Core\Annotation\ApiResource;
  * }
  * 
  * )
+ * @ApiFilter(OrderFilter::class)
  */
 class Invoice
 {

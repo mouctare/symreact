@@ -2,15 +2,19 @@
 
 namespace App\Entity;
 
+use App\Entity\Customer;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\Collection;
 use ApiPlatform\Core\Annotation\ApiResource;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Security\Core\User\UserInterface;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
  * * @ApiResource
+ *  @ApiFilter(searchFilter::class)
+ *  @ApiFilter(OrderFilter::class,
  */
 class User implements UserInterface
 {
