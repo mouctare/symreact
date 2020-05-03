@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Entity\Invoice;
+use App\Entity\User;
 use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use Doctrine\Common\Collections\Collection;
@@ -71,6 +72,31 @@ class Customer
     public function __construct()
     {
         $this->invoices = new ArrayCollection();
+    }
+    /**
+     * Permet de récuperer le total des invoices
+     * @Groups({"customers_read"})
+     * return float
+     */
+
+    public function getTotalAmount(): float {
+        return array_reduce($this->invoices->toArray(),function($total,$invoice){
+            return $total + $invoice->getAmount();
+        },0);
+
+    }/**
+     * Récuperer le montant total non payé (montant total hors factures payées ou annulées)
+     * return float
+      * @Groups({"customers_read"})
+     */
+
+    public function getUnpaidAmount(): float {
+        return array_reduce($this->invoices->toArray(), function($total,$invoice) {
+            return $total + ($invoice->getStatus() ==="PAID" || $invoice->getStatus() === "CANCELD" ? 0 :
+            $invoice->getAmount());
+        
+        
+        }, 0);
     }
 
     public function getId(): ?int
