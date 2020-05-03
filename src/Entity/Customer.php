@@ -4,13 +4,21 @@ namespace App\Entity;
 
 use App\Entity\Invoice;
 use Doctrine\ORM\Mapping as ORM;
+use ApiPlatform\Core\Annotation\ApiFilter;
 use Doctrine\Common\Collections\Collection;
 use ApiPlatform\Core\Annotation\ApiResource;
 use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Serializer\Annotation\Groups;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\CustomerRepository")
- * @ApiResource // Cette anotation permet de rendre cette entité visible
+ * @ApiResource(
+ * normalizationContext={
+ *      "groups"={"customers_read"}
+ * }
+ * ) 
+ * @ApiFilter(searchFilter::class,properties={"firstName":"partial","lastName","company"})// strtégie de recherche
  */
 class Customer
 {
@@ -18,7 +26,7 @@ class Customer
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * 
+     * @Groups({"custmers_red"})
      */
     private $id;
 
