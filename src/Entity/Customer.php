@@ -16,7 +16,9 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 /**
  * @ORM\Entity(repositoryClass="App\Repository\CustomerRepository")
  * @ApiResource(
- * normalizationContext={
+ *  collectionOperations={"GET" "POST"} , 
+ *  itemOperations={"GET", "PUT" "DELETE"}
+ *  normalizationContext={
  *      "groups"={"customers_read"}
  * }
  * ) // Cette anotation permet de rendre cette entité visible
