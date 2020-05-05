@@ -35,6 +35,7 @@ class AppFixtures extends Fixture
 
         for($u = 0; $u < 10; $u++) {
             $user = new User();
+            
 
             $chrono = 1; // A chaque j'arejistre un nouvau user la facture part de 1
 
