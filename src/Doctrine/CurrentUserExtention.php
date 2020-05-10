@@ -44,7 +44,7 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Extension\QueryCollectionExtensionInter
 
         && 
         
-        !$this->auth->isGranted('ROLE_ADMIN') 
+        !$this->auth->isGranted('ROLE_ADMIN')   
         
         && 
         
