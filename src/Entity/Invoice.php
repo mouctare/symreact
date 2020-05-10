@@ -12,27 +12,38 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use Symfony\Component\Validator\Constraints as Assert;
 
-/**
- * @ORM\Entity(repositoryClass="App\Repository\InvoiceRepository")
-  * @ApiResource(
-  * subresourceOperations={
-  *   "api_customers_invoices_get_subresource"={
-  *    "normalization_context"={"groups"={"invoices_subresource"}}
- * }
- * },
- * itemOperations={"GET","PUT" ,"DELETE","increment"={"method"="post","path"="/invoices/{id}/increment",
- * "controller"="App\Controller\InvoiceIncrementationController"}},
-   
- * attributes={
- *     "pagination_enabled" =true,
- *     "pagination_items_per_page"=20,
- 
- * },
- *  normalizationContext={"groups"={"invoices_read"}},
- *  denormalizationContext={"disable_type_enforcement"=true}
- *)
- 
- */
+        /**
+         * @ORM\Entity(repositoryClass="App\Repository\InvoiceRepository")
+         * @ApiResource(
+         * subresourceOperations={
+         *   "api_customers_invoices_get_subresource"={
+         *    "normalization_context"={"groups"={"invoices_subresource"}}
+        * }
+        * },
+        * itemOperations={"GET","PUT" ,"DELETE","increment"={
+        *   "method"="post",
+        *   "path"="/invoices/{id}/increment",
+        *   "controller"="App\Controller\InvoiceIncrementationController",
+        *   "swagger_contex"={
+        *    "summary"="Incrémente une facture",
+        *    "description"="Incrémente le chrono d'une facture donnée"
+
+        *   }
+        *  }
+    
+    *    },
+    
+        
+        * attributes={
+        *     "pagination_enabled" =true,
+        *     "pagination_items_per_page"=20,
+        
+        * },
+        *  normalizationContext={"groups"={"invoices_read"}},
+        *  denormalizationContext={"disable_type_enforcement"=true}
+        *)
+        
+        */
 class Invoice
 {
     /**
