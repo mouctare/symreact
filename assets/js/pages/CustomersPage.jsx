@@ -1,9 +1,10 @@
 import React , { useEffect , useState}from 'react';
 import axios from "axios";
 
- const CustomersPage = props =>{
+  const CustomersPage = props =>{
+  const [customers, setCustomers] = useState([]);
+  const [currentPage, setCurentPage] = useState(1); // On gère la page sur laquelle on se trouve par défaut elle est à 1
 
-    const [customers, setCustomers] = useState([]);
 
     useEffect(() => {
         axios.get("http://localhost:8000/api/customers")
@@ -25,6 +26,24 @@ import axios from "axios";
                 console.log(error.response);
             });
         };
+
+     const handlePageChange = page => {
+            setCurentPage(page);
+        }
+
+        const itemsPerpage = 10;
+        const pagesCount =  Math.ceil(customers.length / itemsPerpage); // ici on fait une division
+        const pages = [];
+
+        for(let i = 1; i <= pagesCount; i++) {
+            pages.push(i);
+        }
+        
+        // Pour gerer la pagination, il faut savoir d'ou on part (start), pendant combier (itemPerPage)
+       // Pour cela , la methode slice permet de decouper un tableau
+       const start = currentPage * itemsPerpage - itemsPerpage;
+       // exemple 3 *10 - 10 = 20 
+       const paginatedCustomers = customers.slice(start, start + itemsPerpage); // Je vais partir de start 
 
       return (
         <>
@@ -66,13 +85,46 @@ import axios from "axios";
                         </button> 
                 </td>
                </tr>)}
-               
-            </tbody>
+                </tbody>
+            
         </table>
+        
+       <div>
+         <ul className="pagination pagination-sm">
+         <li className={"page-item" + (currentPage === 1 && "disabled")} 
+         // si la page actuelle est a  la premiére page, je vais désactivé le boutton
+         > 
+         <button 
+           className="page-link"
+            onClick={() => handlePageChange(currentPage - 1)}
+            >
+          &laquo;
+          </button>
+          </li> 
+          {pages.map(page => ( 
+          <li key={page} className={"page-item" + (currentPage === page && " active")}>
+          <button className="page-link" 
+          onClick={() => handlePageChange(page)}
+          >
+          {page}
+          </button>
+        </li>
+          ))}
+          
+      <li className={"page-item" + (currentPage === pagesCount && "disabled")} 
+       // si la page actuelle est a 10, je vais désactivé le boutton
+      > 
+      <button className="page-link" 
+      onClick={() => handlePageChange(currentPage + 1)}>
+          &raquo;
+          </button>
+   </li> 
+  </ul>
+</div>
 
-        </>
+</>
     );
-}
+};
  
 
 export default CustomersPage;
