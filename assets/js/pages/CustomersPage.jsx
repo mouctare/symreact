@@ -63,7 +63,7 @@ import axios from "axios";
             </thead>
 
             <tbody>
-                {customers.map(customer =>  
+                {paginatedCustomers.map(customer =>  
                 <tr key={customer.id}>
                 <td>{customer.id}</td>
                 <td>
@@ -88,6 +88,8 @@ import axios from "axios";
                 </tbody>
             
         </table>
+        <pagination currentPage={currentPage} itemsPerpage={itemsPerpage} length={customers.length}
+        onPageChanged={handlePageChange} />
         
        <div>
          <ul className="pagination pagination-sm">
