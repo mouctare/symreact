@@ -1,9 +1,12 @@
+
 import React , { useEffect , useState}from 'react';
 import axios from "axios";
+import Pagination from "../components/Pagination";
 
   const CustomersPage = props =>{
   const [customers, setCustomers] = useState([]);
   const [currentPage, setCurentPage] = useState(1); // On gère la page sur laquelle on se trouve par défaut elle est à 1
+  const [search,setSearch] = useState("");
 
 
     useEffect(() => {
@@ -27,27 +30,39 @@ import axios from "axios";
             });
         };
 
-     const handlePageChange = page => {
+        const handlePageChange = page => {
             setCurentPage(page);
-        }
+        };
 
-        const itemsPerpage = 10;
-        const pagesCount =  Math.ceil(customers.length / itemsPerpage); // ici on fait une division
-        const pages = [];
+        const handleSearch = Event => { // HandleSearch est une fonction qui va recevoir un évenemnt et ...
+            const value = event.currentTarget.value; // Dans l'event je veux prendre la currentTarget et je vais prendre sa value.
+            setSearch(value); //setSchearche sera la value que j'ai récupéré
+          };
 
-        for(let i = 1; i <= pagesCount; i++) {
-            pages.push(i);
-        }
-        
-        // Pour gerer la pagination, il faut savoir d'ou on part (start), pendant combier (itemPerPage)
-       // Pour cela , la methode slice permet de decouper un tableau
-       const start = currentPage * itemsPerpage - itemsPerpage;
-       // exemple 3 *10 - 10 = 20 
-       const paginatedCustomers = customers.slice(start, start + itemsPerpage); // Je vais partir de start 
+  const itemsPerPage = 10;
+
+
+  const filteredCustomers = customers.filter(
+      c => 
+     c.firstName.toLowerCase() .includes((search.toLowerCase()) ||
+    c.lastName.toLowerCase() .includes(search.toLowerCase())
+
+   ));
+
+  const paginatedCustomers = Pagination.getData(
+      filteredCustomers,
+      currentPage,
+      itemsPerPage
+
+      );
 
       return (
         <>
         <h1>Listes des clients</h1>
+
+        <div className="form-group">
+            <input type="text" onChange={handleSearch} value={search} className="form-control" placeholder="Rechercher ..."/>
+        </div>
 
         <table className="table table-hover">
             <thead>
@@ -84,47 +99,16 @@ import axios from "axios";
                         Supprimer
                         </button> 
                 </td>
-               </tr>)}
-                </tbody>
-            
-        </table>
-        <pagination currentPage={currentPage} itemsPerpage={itemsPerpage} length={customers.length}
-        onPageChanged={handlePageChange} />
-        
-       <div>
-         <ul className="pagination pagination-sm">
-         <li className={"page-item" + (currentPage === 1 && "disabled")} 
-         // si la page actuelle est a  la premiére page, je vais désactivé le boutton
-         > 
-         <button 
-           className="page-link"
-            onClick={() => handlePageChange(currentPage - 1)}
-            >
-          &laquo;
-          </button>
-          </li> 
-          {pages.map(page => ( 
-          <li key={page} className={"page-item" + (currentPage === page && " active")}>
-          <button className="page-link" 
-          onClick={() => handlePageChange(page)}
-          >
-          {page}
-          </button>
-        </li>
-          ))}
-          
-      <li className={"page-item" + (currentPage === pagesCount && "disabled")} 
-       // si la page actuelle est a 10, je vais désactivé le boutton
-      > 
-      <button className="page-link" 
-      onClick={() => handlePageChange(currentPage + 1)}>
-          &raquo;
-          </button>
-   </li> 
-  </ul>
-</div>
+               </tr>
+               )}
+            </tbody>
+            </table>
 
-</>
+            <Pagination currentPage={currentPage} itemsPerPage={itemsPerPage} length=
+            {filteredCustomers.length}
+            onPageChanged={handlePageChange} />
+        
+      </>
     );
 };
  
