@@ -1,27 +1,36 @@
-import React, from "react";
+import React from "react";
+
 
 
 //<pagination currentPage={currentPage} itemsPerpage={itemsPerpage} length={customers.length} les props du composant parent (customers)
 //onPageChanged={handlePageChange} />
 
 const Pagination = ({ currentPage,itemsPerPage, length, onPageChanged}) => {
+  
+
+    const pagesCount =  Math.ceil(length / itemsPerPage); // ici on fait une division
+        const pages = [];
+
+        for(let i = 1; i <= pagesCount; i++) {
+            pages.push(i);
+        }
     
-        return ( <div>
+        return (
+             <>
             <ul className="pagination pagination-sm">
-            <li className={"page-item" + (currentPage === 1 && "disabled")} 
+            <li className={"page-item" + (currentPage === 1 && " disabled")} 
             // si la page actuelle est a  la premiére page, je vais désactivé le boutton
             > 
             <button 
               className="page-link"
-               onClick={() => handlePageChange(currentPage - 1)}
+               onClick={() => onPageChanged(currentPage - 1)}
                >
              &laquo;
              </button>
              </li> 
              {pages.map(page => ( 
              <li key={page} className={"page-item" + (currentPage === page && " active")}>
-             <button className="page-link" 
-             onClick={() => handlePageChange(page)}
+             <button className="page-link" onClick={() => onPageChanged(page)}
              >
              {page}
              </button>
@@ -29,14 +38,25 @@ const Pagination = ({ currentPage,itemsPerPage, length, onPageChanged}) => {
              ))}
              
          <li className={"page-item" + (currentPage === pagesCount && "disabled")} 
-          // si la page actuelle est a 10, je vais désactivé le boutton
+        
          > 
-         <button className="page-link" 
-         onClick={() => handlePageChange(currentPage + 1)}>
+         <button 
+         className="page-link" 
+         onClick={() => onPageChanged(currentPage + 1)}
+         >
              &raquo;
-             </button>
+    </button>
       </li> 
      </ul>
-   </div>);
+   </>
+   
+   );
            
+};
+
+Pagination.getData = (items, currentPage, itemsPerPage) => {
+  const start = currentPage * itemsPerPage - itemsPerPage;
+  return items.slice(start, start + itemsPerPage); 
 }
+
+export default Pagination;
