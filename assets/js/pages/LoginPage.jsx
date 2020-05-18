@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
-import axios from 'axios';
+import AuthAPI from "../services/AuthAPI";
+
 
 const  LoginPage = (props) => {
     const [credentials, setCredentials] = useState({
@@ -9,40 +10,31 @@ const  LoginPage = (props) => {
     
     const [error, setError] = useState("");
 
-    const handleChange = (event) => {
+    // Gestion des champs
+    const handleChange = ({currentTarget}) => {
         // Je vais prendre le changement qui ya eu de cette input là !
-        const value = event.currentTarget.value;
-        const name = event.currentTarget.name;
+        const {value, name} = currentTarget;
+        //const value = currentTarget.value;
+        //const name = currentTarget.name;
 
         setCredentials({...credentials, [name]:  value});
         // Là, je vais changé mes credentials(mon state),
         // Je vais que ça soit tout ce que contient mon state et 
         // je vais l'ecraser avec ma value en mettant name entre crochet on parle de variable
     };
-
-    const handleSubmit = async event => {
+      // Gestion du submit
+      const handleSubmit = async event => {
         event.preventDefault();
 
         try {
-        const token =   await axios
-            .post("http://localhost:8000/api/login_check", credentials)
-            // Quand je reçois la reponse c'est que je vais extraire c'est response.data.token
-            .then(response => response.data.token);
-            setError("");
-
-            // Pour stoker le mot de passe dans le navigateur
-            window.localStorage.setItem("authToken",token);
-            // On previent Axios qu'on a maintenant un header par défaut sur toutes nos futures requetes HTTP
-            axios.defaults.headers["Authorization"] = "Bearer " + token;
-           
-            } catch(error) {
+        await AuthAPI.authenticate(credentials);
+        setError("");
+       } catch(error) {
         setError(
             "Aucun compte ne possède cette adresse  email ou alors les informations ne  corespondent pas !"
             );
         }
-        
-
-        console.log(credentials);
+         console.log(credentials);
 
     };
     
