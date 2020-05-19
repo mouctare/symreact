@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import AuthAPI from "../services/AuthAPI";
 
 
-const  LoginPage = (props) => {
+const  LoginPage = ({onLogin, history}) => {
     const [credentials, setCredentials] = useState({
         username: "",
         password: ""
@@ -29,12 +29,14 @@ const  LoginPage = (props) => {
         try {
         await AuthAPI.authenticate(credentials);
         setError("");
+        onLogin(true);
+        history.replace("/customers");
        } catch(error) {
         setError(
             "Aucun compte ne possède cette adresse  email ou alors les informations ne  corespondent pas !"
             );
         }
-         console.log(credentials);
+         
 
     };
     

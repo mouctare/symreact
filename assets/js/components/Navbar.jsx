@@ -5,10 +5,12 @@ import { NavLink } from 'react-router-dom';
 
 
 
-const Navbar = props => {
+const Navbar = ({ isAuthenticated, onLogout , history}) => {
 
   const handleLogout = () => {
     AuthAPI.logout();
+    onLogout(false);
+    history.push('/login');
     
   };
      return (
@@ -42,8 +44,10 @@ const Navbar = props => {
                </li>
          </ul>
           <ul className="navbar -nav ml -auto">
-          <li className="nav-item">
-            <NavLink to="/register" className="nav-link">
+            {(!isAuthenticated &&( 
+            <>
+             <li className="nav-item">
+               <NavLink to="/register" className="nav-link">
                 Inscription
             </NavLink>
           </li>
@@ -52,11 +56,14 @@ const Navbar = props => {
                 Connexion !
             </NavLink>
           </li>
-              <li className="nav-item">
+           </>
+           )) || (
+         <li className="nav-item">
                 <button onClick={handleLogout} className="btn btn-danger">
                   Decoonexion
               </button>
           </li>
+           )}
        </ul>
      </div>
    </nav>
