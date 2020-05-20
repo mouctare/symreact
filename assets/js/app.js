@@ -3,7 +3,7 @@ import React, {useState} from "react";
 import ReactDom from "react-dom";
 import Navbar from "./components/Navbar";
 import HomePages from "./components/HomePages";
-import {HashRouter,Switch,Route, withRouter} from "react-router-dom";
+import {HashRouter,Switch,Route, withRouter,Redirect} from "react-router-dom";
 import CustomersPage from "./pages/CustomersPage";
 import InvoicesPage from "./pages/InvoicesPage";
 import CustomersPageWithPagination from "./pages/CustomersPageWithPagination";
@@ -40,7 +40,11 @@ return (
             )}
          />
         <Route path="/invoices" component={InvoicesPage}/>
-           <Route path="/customers" component={CustomersPage}/>
+           <Route path="/customers" render={(props) => {
+             if(isAuthenticated) return <CustomersPage {...props}/>
+             return <Redirect to="/login" />
+
+           }}/>
             <Route path="/" component={HomePages}/>
         </Switch>
      </main>
