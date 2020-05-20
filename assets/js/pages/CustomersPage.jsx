@@ -80,10 +80,10 @@ import CustomersAPI from "../services/CustomersAPI";
             <input 
             type="text" onChange={handleSearch} 
             value={search} className="form-control" placeholder="Rechercher ..."/>
+            <i class="icon-search"></i>
         </div>
 
-        <div className="table-responsive">          
-       <table className="table">
+     
         <table className="table table-hover">
             <thead>
                 <tr>
@@ -138,9 +138,9 @@ import CustomersAPI from "../services/CustomersAPI";
             onPageChanged={handlePageChange} 
             />
            )}
-           </table>
+           
         </div>
-     </div>
+     
         );
 };
  

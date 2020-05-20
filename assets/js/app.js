@@ -1,29 +1,21 @@
 
-import React, {useState} from "react";
+import React, { useState } from "react";
 import ReactDom from "react-dom";
-import Navbar from "./components/Navbar";
+import { HashRouter, Route, Switch, withRouter } from "react-router-dom";
+import '../css/app.css';
+import AuthContext from "./components/contexts/AuthContext";
 import HomePages from "./components/HomePages";
-import {HashRouter,Switch,Route, withRouter,Redirect} from "react-router-dom";
+import Navbar from "./components/Navbar";
+import PrivateRoute from "./components/PrivateRoute";
 import CustomersPage from "./pages/CustomersPage";
 import InvoicesPage from "./pages/InvoicesPage";
-import CustomersPageWithPagination from "./pages/CustomersPageWithPagination";
 import LoginPage from "./pages/LoginPage";
-import '../css/app.css';
 import AuthAPI from "./services/AuthAPI";
-
-
 
 
 AuthAPI.setup();
 
-const PrivateRoute = ({path,isAuthenticated,component}) => 
-   isAuthenticated ? (
-  <Route path={path} component={component} /> 
-  ) : ( 
-    <Redirect to="/login" />
-  );
-
-const App = () => {
+ const App = () => {
   // Il faut qu'on demande à notre AuthAPI si on est connecté ou pas
 
 const [isAuthenticated, setIsAuthenticated] = useState(
@@ -31,36 +23,31 @@ const [isAuthenticated, setIsAuthenticated] = useState(
   );
 
   const NavbarWithRouter = withRouter(Navbar);
+  // Je me crée la value du context
+ // const contextValue = {
+  //  isAuthenticated,
+  //  setIsAuthenticated
+ // }
 
 return (
+  <AuthContext.Provider value={{
+    isAuthenticated,
+   setIsAuthenticated
+
+  }}>
     <HashRouter>
-    <NavbarWithRouter 
-    isAuthenticated={isAuthenticated} 
-    onLogout={setIsAuthenticated} 
-    />
+    <NavbarWithRouter />
+
     <main className="container.pt -5">
         <Switch>
-          <Route 
-          path="/login" 
-          render={props => ( 
-           <LoginPage onLogin= {setIsAuthenticated} {...props} />
-            )}
-         />
-        <PrivateRoute 
-        path="/invoices" 
-        isAuthenticated={isAuthenticated}
-        component={InvoicesPage}
-        />
-        
-       <PrivateRoute 
-        path="/customers" 
-        isAuthenticated={isAuthenticated}
-         component={CustomersPage} 
-         />
+          <Route path="/login" component={LoginPage}/>
+           <PrivateRoute path="/invoices" component={InvoicesPage}/>
+           <PrivateRoute path="/customers" component={CustomersPage}/>
         <Route path="/" component={HomePages}/>
         </Switch>
      </main>
    </HashRouter>
+   </AuthContext.Provider>
 
     );
 };
