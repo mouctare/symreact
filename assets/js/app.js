@@ -16,6 +16,13 @@ import AuthAPI from "./services/AuthAPI";
 
 AuthAPI.setup();
 
+const PrivateRoute = ({path,isAuthenticated,component}) => 
+   isAuthenticated ? (
+  <Route path={path} component={component} /> 
+  ) : ( 
+    <Redirect to="/login" />
+  );
+
 const App = () => {
   // Il faut qu'on demande à notre AuthAPI si on est connecté ou pas
 
@@ -39,20 +46,18 @@ return (
            <LoginPage onLogin= {setIsAuthenticated} {...props} />
             )}
          />
-        <Route path="/invoices" component={InvoicesPage}/>
-           <Route path="/customers" 
-           render={(props) => 
-              isAuthenticated ? ( 
-               // Avec la tairenaire es ce que je suis connecté ? si oui je te donne l'accé au customers
-             // sinon je te dirige vers la connecxion
-             <CustomersPage {...props}/> 
-             ): (
-             <Redirect to="/login" />
-             )
-             
-            }
-            />
-            <Route path="/" component={HomePages}/>
+        <PrivateRoute 
+        path="/invoices" 
+        isAuthenticated={isAuthenticated}
+        component={InvoicesPage}
+        />
+        
+       <PrivateRoute 
+        path="/customers" 
+        isAuthenticated={isAuthenticated}
+         component={CustomersPage} 
+         />
+        <Route path="/" component={HomePages}/>
         </Switch>
      </main>
    </HashRouter>
