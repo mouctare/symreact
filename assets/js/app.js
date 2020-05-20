@@ -40,11 +40,18 @@ return (
             )}
          />
         <Route path="/invoices" component={InvoicesPage}/>
-           <Route path="/customers" render={(props) => {
-             if(isAuthenticated) return <CustomersPage {...props}/>
-             return <Redirect to="/login" />
-
-           }}/>
+           <Route path="/customers" 
+           render={(props) => 
+              isAuthenticated ? ( 
+               // Avec la tairenaire es ce que je suis connecté ? si oui je te donne l'accé au customers
+             // sinon je te dirige vers la connecxion
+             <CustomersPage {...props}/> 
+             ): (
+             <Redirect to="/login" />
+             )
+             
+            }
+            />
             <Route path="/" component={HomePages}/>
         </Switch>
      </main>
