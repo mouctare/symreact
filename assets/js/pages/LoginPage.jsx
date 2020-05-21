@@ -48,7 +48,7 @@ const { setIsAuthenticated } =  useContext(AuthContext)
             <h1>Connexion à l'application</h1>
 
             <form onSubmit={handleSubmit}>
-                <div className="form-group">
+               {/*  <div className="form-group">
                     <label htmlFor="username">Adresse </label>
                     <input 
                     value={credentials.username}
@@ -60,7 +60,7 @@ const { setIsAuthenticated } =  useContext(AuthContext)
                     className={"form-control" + (error && " is-invalid")}
                     />
                   {error && <p className="invalid-feedback">{error}</p>}
-                    </div>
+                    </div> */}
                    <div className="form-group">
                     <label htmlFor="password">Mot de passe</label>
                     <input 
