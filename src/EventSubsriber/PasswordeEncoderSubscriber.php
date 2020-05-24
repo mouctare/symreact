@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Envents;
-
-use Symfony\Component\EventDispatcher\EnventSubscriberInterface;
+namespace App\EventSubscriber;
+use Symfony\Component\HttpKernel\KernelEvent;
 use Symfony\Component\HttpKernel\Event\ViewEvent;
+use ApiPlatform\Core\EventListener\EventPriorities;
+use Symfony\Component\EventDispatcher\EnventSubscriberInterface;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 
@@ -23,7 +24,8 @@ class PasswordEncoderSubscriber implements EnventSubscriberInterface {
     public static function getSubscribedEvents() 
     { 
         return [
-            KernelEvents::VIEW => ['encodePassword', EventPriorities::PRE_WRITE] // Ecoute notre class s'appelle VIEW  et elle veut se placer 
+            KernelEvents::VIEW => ['encodePassword', EventPriorities::PRE_WRITE] 
+            // Ecoute notre class s'appelle VIEW  et elle veut se placer 
             // avant l'ecriture tu appeleras donc avant l'ecriture la methode encodeassword.
 
 
@@ -32,14 +34,14 @@ class PasswordEncoderSubscriber implements EnventSubscriberInterface {
 
     }
 
-    public function encodePassword(ViewEvent $envent) {
-       $user =   $envent->getControllerResult();
-       dd($user);
+    public function encodePassword(ViewEvent $event) {
+       $user =   $event->getControllerResult();
+       
 
-       $method = $envent->getRequest()->getMethod();
+       $method = $event->getRequest()->getMethod();
  
        if($user instanceof User && $method === "POST") {
-          $hash = $this->encoder->encodePassword($user,$user->getPassword());
+          $hash = $this->encoder->ncodePassword($user,$user->getPassword());
           $user->setPassword($hash);
 
        }

@@ -11,6 +11,7 @@ import CustomersPage from "./pages/CustomersPage";
 import InvoicesPage from "./pages/InvoicesPage";
 import LoginPage from "./pages/LoginPage";
 import AuthAPI from "./services/AuthAPI";
+import CustomerPage from "./pages/CustomerPage";
 
 
 AuthAPI.setup();
@@ -41,8 +42,9 @@ return (
     <main className="container.pt -5">
         <Switch>
           <Route path="/login" component={LoginPage}/>
-           <PrivateRoute path="/invoices" component={InvoicesPage}/>
-           <PrivateRoute path="/customers" component={CustomersPage}/>
+           <PrivateRoute exact path="/invoices" component={InvoicesPage}/>
+           <PrivateRoute exact path="/customers/:id" component={CustomerPage}/>
+           <PrivateRoute  exact path="/customers" component={CustomersPage}/>
         <Route path="/" component={HomePages}/>
         </Switch>
      </main>

@@ -1,7 +1,7 @@
 <?php
 
 namespace App\EventSubscriber;
-namespace Symfony\Component\HttpKernel\Event;
+use Symfony\Component\HttpKernel\Event;
 
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\HttpKernel\Event\ViewEvent;
