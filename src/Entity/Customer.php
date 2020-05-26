@@ -82,7 +82,7 @@ class Customer
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="customers")
      *  @Groups({"customers_read","invoices_read"})
-     *  @Assert\NotBlank(message="L'utilisateur  est obligatoire")
+     *  @(message="L'utilisateur  est obligatoire")
      */
     private $user;
 
