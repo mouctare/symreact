@@ -1,6 +1,7 @@
 
 import React, { useState } from "react";
 import ReactDom from "react-dom";
+import 'bootstrap/dist/css/bootstrap.css';
 import { HashRouter, Route, Switch, withRouter } from "react-router-dom";
 import '../css/app.css';
 import AuthContext from "./components/contexts/AuthContext";
