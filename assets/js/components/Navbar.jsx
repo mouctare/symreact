@@ -63,7 +63,7 @@ const Navbar = ({  history }) => {
            )) || (
          <li className="nav-item">
                 <button onClick={handleLogout} className="btn btn-danger">
-                  Decoonexion
+                  Déconnexion
               </button>
           </li>
            )}

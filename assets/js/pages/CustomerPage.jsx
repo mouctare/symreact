@@ -1,13 +1,12 @@
 import React,{useState,useEffect} from 'react';
 import {Link} from "react-router-dom";
 import Field from "../components/forms/Field";
-import axios from "axios";
+import CustomersAPI from "../services/CustomersAPI";
 
 
-
-const CustomerPage = (props) => {
+const CustomerPage = ({match,history}) => {
     // Je vais sortir l'identifiant de mes params.
-    const { id = "new" } = props.match.params;
+    const { id = "new" } = match.params;
 
     const [customer, setCustomer]  = useState({
         lastName: "",
@@ -26,23 +25,22 @@ const CustomerPage = (props) => {
     
     const [editing, setEditing] = useState(false);
 
+    // Récupération du customer en fonction de l'identifiant
     const fetchCustomer = async id => {
         try {
-            const data =  await axios
-            .get("http://localhost:8000/api/customers/" + id) 
-            .then(response => response.data);
-            const { firstName,lastName,email, company} = data;
-
+            const { firstName,lastName,email, company} =  await CustomersAPI.find(
+                id
+                );
             setCustomer({ firstName, lastName,email,company});
          } catch (error) {
-             console.log(error.response);
+            // TODO : Notification flash d'une erreur
+             history.replace("/customers");
          }
             
     }
 
-
-
-    useEffect(() =>{
+    // Chargement du customer du customer si besoin au chargement du composant ou au chargement de l'identifiant
+     useEffect(() =>{
         // Si id est différent de new, je suis entrain d'editer
         if(id !== "new") {
         setEditing(true);
@@ -51,12 +49,12 @@ const CustomerPage = (props) => {
 
     }, [id]);
 
-
+    // Gestion des changements des inputs dans le formulaires
     const handleChange = ({currentTarget}) => {
         const {name, value} = currentTarget;
         setCustomer({...customer,[name]: value});
     };
-
+     // Gestion de la soummisssion du formulaire
     const handleSubmit = async event => {
         event.preventDefault();
 
@@ -64,33 +62,24 @@ const CustomerPage = (props) => {
 
             if(editing) {
                 // Si je suis en mode édition, je vais applé cette methode put
-                const response = await axios.put(
-                    "http://localhost:8000/api/customers/" + id, 
-                    customer
-                    );
+                 await CustomersAPI.update(id, customer)
                 
                     // TODO : flash notification de succés
             } else {
-                // Si je suis pas en mode edition , 
-                // je vais applé la methode post car dans ce cas je suis entrain de créer un customer
-                const response = await axios.post(
-                    "http://localhost:8000/api/customers", 
-                customer
-                );
-              // Quand on ajoute quelquin , on fait une redirection vers les customers
-              // TODO : flash notification de succés
-              props.history.replace("/customers");
+                await CustomersAPI.create(customer);
+               // TODO : flash notification de succés
+              history.replace("/customers");
 
             }
 
            setErrors({});
-            }catch(error) {
-           if(error.response.data.violations) {
+            }catch({response}) {
+                const { violations } = response.data;
+           if(violations) {
                const apiErros = {};
-               error.response.data.violations.forEach(violation => {
-                   apiErros[violation.propertyPath] = violation.message;
-                   
-               });
+               violations.forEach(({propertyPath, message}) => {
+                   apiErros[propertyPath] = message;
+                   });
                setErrors(apiErros);
                // TODO : flash notification de succés
            }
@@ -129,7 +118,7 @@ const CustomerPage = (props) => {
                        error={errors.email}
                   />
                  <Field
-                  name="compagny" 
+                  name="company" 
                   label="Entrprise" 
                   placelholder="Entreprise du client" 
                   value={customer.company}
@@ -141,11 +130,8 @@ const CustomerPage = (props) => {
                      <Link to="/customers" className="btn btn-link">Retour à la liste</Link>
                  </div>
               </form>
-    
-    
-    
-    
-    </div>
+              
+              </div>
     );
     
 

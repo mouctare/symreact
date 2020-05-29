@@ -3,7 +3,8 @@ import Field from "../components/forms/Field";
 import Select from "../components/forms/Select"
 import {Link} from "react-router-dom";
 import CustomersAPI from "../services/CustomersAPI";
-import axios from "axios";
+import InvoicesAPI from "../services/InvoicesAPI";
+
 
 
 
@@ -28,38 +29,41 @@ const InvoicePage = ({ history, match }) => {
         status: ""
           
       })
+       // Récupération des clients à chaque chargement
       const fetchCustomers = async () => {
-          try {
-              const data = await CustomersAPI.findAll();
-              setCustomers(data);
-              // Si le customer est vide, on va changer notre invoice , 
-              //on va mettre dedans une copie de notre invoice , 
-              //mais dans laquelle on va mettre c'est égal à lindex 0 c'est à le premier qu'on va charger
-              if(!invoice.customer) setInvoice({...invoice, customer:data[0].id });
+    try {
+       const data = await CustomersAPI.findAll();
+        setCustomers(data);
+        // Si le customer est vide, on va changer notre invoice , 
+        //on va mettre dedans une copie de notre invoice , 
+        //mais dans laquelle on va mettre c'est égal à lindex 0 c'est à le premier qu'on va charger
+     if(!invoice.customer) setInvoice({...invoice, customer:data[0].id });
 
-          } catch(error) {
-              console.log(error.response);
+         } catch(error) {
+            history.replace('/invoices');
+             // TODO : Flash notification erreur
           }
-      }
+      };
       // Cette function prend en parametre un id
+      // Récupération d'une facture à chaque chargement
     const fetchInvoice = async id => {
         try {
-          const data = await axios
-          .get("http://localhost:8000/api/invoices/" + id)
-          .then(response => response.data);
+            const { amount, status, customer}  = await InvoicesAPI.find(id);
           // Pour ne pas avoir toutes données , on extrait celles qui nous interessent
           // Je vais sortir ces propriétés de mon data
-          const { amount, status, customer} = data;
-          // customer: customer  avoir un seul customer au lieu de tout l'objet customer.
+           // customer: customer  avoir un seul customer au lieu de tout l'objet customer.
           setInvoice({ amount, status, customer: customer.id});
         } catch (error) {
-            console.log(error.response)
+            // TODO : Flash notification erreur
+            history.replace('/invoices');
         }
     }
+    // Récupération de la liste à chaque changement du composant
       useEffect(() => {
           fetchCustomers();
       }, []);
      // Cet effet dépend de la variable id c'est à dire si l'id est amené à changer il faut le prendre en compte
+     // Récupération de la bonne facture quand l'identifiant de l'URL change
       useEffect(() => {
       if(id !== "new") {
           setEditing(true);
@@ -68,28 +72,22 @@ const InvoicePage = ({ history, match }) => {
     }, [id]);
       // Gestion des changements des inputs dans le formulaire formulaire
       const handleChange = ({currentTarget}) => {
-      const { name,value } = currentTarget;
+      const { name, value } = currentTarget;
       setInvoice({  ...invoice, [name]: value });
-      }
-
+      };
+  // Gestion de la soummission du formulaire
       const handleSubmit = async event  => {
-          event.preventDefault();
+     event.preventDefault();
 
-          try {
-                  if(editing) {
-                      const response = await axios.put("http://localhost:8000/api/invoices/" + id , { ...invoice, 
-                      customer: `/api/customers/${invoice.customer}`}
-                      );
-                      // TODO : Flash notification success
-                      console.log(response);
-                } else {
-                      const response = await axios.post("http://localhost:8000/api/invoices", {
-                      ...invoice,
-                       customer: `/api/customers/${invoice.customer}`
-                      });
-                      // TODO : Flash notification success
-                      //console.log(response);
-                      history.replace("/invoices");
+     try {
+        if(editing) {
+        await InvoicesAPI.update(id, invoice);
+        // TODO : Flash notification success
+         } else {
+      await InvoicesAPI.create(invoice)
+        // TODO : Flash notification erreur
+        //console.log(response);
+        history.replace("/invoices");
                 }
            } catch({response}) {
             const { violations } = response.data;
@@ -115,9 +113,10 @@ const InvoicePage = ({ history, match }) => {
             name="amount" 
             type="number" 
             placeholder="Montant de la facture"
-             label="Montant" onChange={handleChange} 
+            label="Montant" 
+             onChange={handleChange} 
             value={invoice.amount} 
-            errors={errors.amount} 
+            error={errors.amount} 
             />
 
             <Select 
@@ -137,7 +136,7 @@ const InvoicePage = ({ history, match }) => {
           </Select>
 
          <Select
-          name="stauts" 
+          name="status" 
           label="Status"
            value={invoice.status} 
            errors={errors.status} 
@@ -145,7 +144,7 @@ const InvoicePage = ({ history, match }) => {
            >
              <option value="SENT">Envoyée</option>
              <option value="PAID">Payée</option>
-             <option value="CANCELLD">Annulée</option>
+             <option value="CANCELLED">Annulée</option>
         </Select>
         <div className="form-group">
             <button type="submit" className="btn btn-success">

@@ -10,7 +10,9 @@ import Navbar from "./components/Navbar";
 import PrivateRoute from "./components/PrivateRoute";
 import CustomersPage from "./pages/CustomersPage";
 import InvoicesPage from "./pages/InvoicesPage";
+import InvoicePage from "./pages/InvoicePage";
 import LoginPage from "./pages/LoginPage";
+import RegisterPage from "./pages/RegisterPage";
 import AuthAPI from "./services/AuthAPI";
 import CustomerPage from "./pages/CustomerPage";
 
@@ -43,6 +45,8 @@ return (
     <main className="container.pt -5">
         <Switch>
           <Route path="/login" component={LoginPage}/>
+          <Route path="/register" component={RegisterPage}/>
+          <PrivateRoute exact path="/invoices/:id" component={InvoicePage}/>
            <PrivateRoute exact path="/invoices" component={InvoicesPage}/>
            <PrivateRoute exact path="/customers/:id" component={CustomerPage}/>
            <PrivateRoute  exact path="/customers" component={CustomersPage}/>
