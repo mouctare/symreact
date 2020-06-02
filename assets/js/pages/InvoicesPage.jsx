@@ -2,6 +2,9 @@ import moment from "moment";
 import React, { useEffect, useState } from 'react';
 import Pagination from "../components/Pagination";
 import InvoicesAIP from "../services/InvoicesAPI";
+import {Link} from "react-router-dom";
+import { toast } from "react-toastify";
+import TableLoader from "../loaders/TableLoader";
 
 
 // Cette constate sert à mettre le status à différend couleur !
@@ -26,6 +29,7 @@ const InvoicesPage = props => {
     const [invoices, setInvoices] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [search,setSearch] = useState("");
+    const [loading, setLoading] = useState(true);
     const itemsPerPage = 10;
 
 // Récupération des invoices auprés de l'API
@@ -35,10 +39,11 @@ const fetchInvoices = async () => {
     try {
         const data =  await InvoicesAIP.findAll();
         setInvoices(data);
-
-    } catch(error) {
-        console.log(error.response);
-    }
+        // Quand on a fini de fecther les factures , on est plus entrain de loader
+        setLoading(false);
+     } catch(error) {
+        toast.error("Une erreur est survenue  lors du chargement des factures !");
+    } 
     
 };
 
@@ -68,9 +73,9 @@ const handleSearch = ({currentTarget}) => {
 
           try {
              await InvoicesAIP.delete(id);
-
-          } catch(error) {
-              console.log(error.response);
+             toast.success("La facture a bine été supprimée");
+         } catch(error) {
+            toast.error("Une erreur est survenue")
               // Je vais ici remettre mes originals.
               setInvoices(orginalInvoices);
           }
@@ -103,10 +108,14 @@ const paginatedInvoices = Pagination.getData(
 
     return ( 
         <div className="container">
-        
-         <h1>Listes des factures</h1>
+     <div className="mb-3 d-flex justify-content-between align-items-center">
+               <h1>Listes des factures</h1>
+               <Link  className="btn btn-primary" to="/invoices/new" >
+                Créer un facture
+               </Link>
+          </div>
 
-         <div className="form-group">
+       <div className="form-group">
             <input 
             type="text" onChange={handleSearch} 
             value={search} className="form-control" placeholder="Rechercher ..."
@@ -124,15 +133,16 @@ const paginatedInvoices = Pagination.getData(
                      <th></th>
                  </tr>
              </thead>
-             <tbody>
+             {!loading && (
+           <tbody>
                    
                  {paginatedInvoices.map(invoice => (
                      <tr key={invoice.id}>
                     <td>{invoice.chrono}</td>
                      <td>
-                         <a href="#">
-                             {invoice.customer.firstName} {invoice.customer.lastName}
-                             </a>
+                         <Link to={"/customers/" + invoice.customer.id}>
+                         {invoice.customer.firstName} {invoice.customer.lastName}
+                        </Link>
                        </td>
                      <td className="text-center">{formatDate(invoice.sentAt)}
                      </td>
@@ -146,13 +156,19 @@ const paginatedInvoices = Pagination.getData(
                          {invoice.amount.toLocaleString()} €
                     </td>
                      <td>
-                         <button className="btn btn-sm btn-primary  mr-1">Editer</button>
+                         <Link 
+                         to={"/invoices/" + invoice.id} className="btn btn-sm btn-primary  mr-1">Editer
+                         </Link>
                          <button className="btn btn-sm btn-danger" onClick={() => handleDelete(invoice.id)}>Supprimé</button>
                      </td>
                      </tr>
                 ))}
                 </tbody>
+             )}
          </table>
+        
+         {loading && <TableLoader />} 
+
          <Pagination  
           currentPage={currentPage} 
           itemsPerPage={itemsPerPage} 
