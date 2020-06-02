@@ -36,24 +36,9 @@ function find(id) {
 function update(id, customer) {
   return axios
   .put("http://localhost:8000/api/customers/" + id, customer)
-  .then(async response => {
-    const cachedCustomers = await Cache.get("customers");
-
-    if(cachedCustomers) {
-      // S j'ai quelque chose dans cachedcustomers , je vais trouvé l'index de la personne
-     
-      const index = cachedCustomers.findIndex(c => c.id === +id);
-       // Je vais crée un nouvel objet 
-      const newCachedCustomers = response.data;
-       // Je vais remplacé c'est qu'il yavais dans cet index par le nouveau customer
-      
-      cachedCustomers[index] = newCachedCustomer;
-  
-     Cache.set("customers", cachedCustomers);
-     // Au lié de donner tous mes customers , je vais donné tout simplement mon nouveau customer (cachedCustomers) puisque je l'ai modifié
-      
-      }
-      return response;
+  .then(response => {
+    Cache.invalidate("customers");
+    return response;
      });
 }
 
