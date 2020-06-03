@@ -1,5 +1,6 @@
 import axios from "axios";
 import Cache from "./cache";
+import { CUSTOMERS_API } from "../config";
 
  async function findAll() {
   const cachedCustomers = await Cache.get("customers");
@@ -7,23 +8,31 @@ import Cache from "./cache";
   if(cachedCustomers) return cachedCustomers;
 
   return axios
-     .get("http://localhost:8000/api/customers")
-    .then(response => {
+     .get(CUSTOMERS_API).then(response => {
       const customers = response.data[ 'hydra:member'];
       Cache.set("customers", customers);
       return customers;
       });
     }
 
-function find(id) {
+ async function find(id) {
+  const cachedCustomers = await Cache.get("customers." + id);
+  if(cachedCustomers) return cachedCustomer;
+
   return axios
-   .get("http://localhost:8000/api/customers/" + id) 
-  .then(response => response.data);
-}
+   .get(CUSTOMERS_API + "/" + id) 
+   .then(response => {
+     const customer = response.data
+
+     Cache.set("customer." + id, customer);
+ 
+     return customer;
+  });
+}  
 
   function deleteCustomers(id) {
    
-    return  axios.delete ("http://localhost:8000/api/customers/" + id).then( async   response => {
+    return  axios.delete (CUSTOMERS_API + "/" + id).then( async   response => {
       const cachedCustomers = await Cache.get("customers");
 
    if(cachedCustomers) {
@@ -35,16 +44,39 @@ function find(id) {
 
 function update(id, customer) {
   return axios
-  .put("http://localhost:8000/api/customers/" + id, customer)
-  .then(response => {
-    Cache.invalidate("customers");
-    return response;
+  .put(CUSTOMERS_API + "/"  + id, customer)
+  .then(async response => {
+    const cachedCustomers = await Cache.get("customers");
+    const cachedCustomer = await Cache.get("customers." + id);
+
+    if(cachedCustomer) {
+      Cache.set("customers." + id, response.data);
+
+    }
+    
+
+
+    if(cachedCustomers) {
+      // S j'ai quelque chose dans cachedcustomers , je vais trouvé l'index de la personne
+     
+      const index = cachedCustomers.findIndex(c => c.id === id);
+       // Je vais crée un nouvel objet 
+      const newCachedCustomers = response.data;
+       // Je vais remplacé c'est qu'il yavais dans cet index par le nouveau customer
+      
+      cachedCustomers[index] = response.data;
+  
+    // Cache.set("customers", cachedCustomers);
+     // Au lié de donner tous mes customers , je vais donné tout simplement mon nouveau customer (cachedCustomers) puisque je l'ai modifié
+      
+      }
+      return response;
      });
 }
 
 function create(customer) {
   return axios
-  .post("http://localhost:8000/api/customers", customer)
+  .post(CUSTOMERS_API + "/" + id, customer)
   .then( async response => {
     // Si j'ai réussi cette requet(.then), voila c'est que je veux faire (response)
     const cachedCustomers = await Cache.get("customers");
