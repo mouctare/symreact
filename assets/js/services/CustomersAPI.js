@@ -75,10 +75,9 @@ function update(id, customer) {
 }
 
 function create(customer) {
-  return axios
-  .post(CUSTOMERS_API + "/" + id, customer)
-  .then( async response => {
+  return axios.post(CUSTOMERS_API, customer).then( async response => {
     // Si j'ai réussi cette requet(.then), voila c'est que je veux faire (response)
+    // Pas comme ça CUSTOMERS_API + "/" + id, customer
     const cachedCustomers = await Cache.get("customers");
 
     if(cachedCustomers) {
