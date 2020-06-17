@@ -1,10 +1,7 @@
 <?php
-   namespace App\EventSubscriber;
+   namespace App\Events;
 
    use Lexik\Bundle\JWTAuthenticationBundle\Event\JWTCreatedEvent;
-
-
-
  
    class JwtCreatedSubscriber 
    {

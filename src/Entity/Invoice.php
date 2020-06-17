@@ -58,7 +58,7 @@ class Invoice
      * @ORM\Column(type="float")
     * @Groups({"invoices_read","customers_read","invoices_subresource"})
     * @Assert\NotBlank(message="Le chrono est obligatoire ! ")
-    *  @Assert\Type(type="integer", message="Le montant de la facture doit etre un numérique !")
+    
     */
 
     private $amount;
@@ -72,10 +72,10 @@ class Invoice
     private $sentAt;
 
     /**
-     * @ORM\Column(type="string", length=255)
-       * @Groups({"invoices_read","customers_read"})
-       * @Assert\NotBlank(message="Le statut de la facture est obligatoire ")
-       *  @Assert\Choice(choices={"SENT","PAID","CANCELLED"}, message="Le status doit etre SENT , PAID ou CANCELLED"))
+     *@ORM\Column(type="string", length=255)
+     *@Groups({"invoices_read","customers_read"})
+     *@Assert\NotBlank(message="Le statut de la facture est obligatoire ")
+     * @Assert\Choice(choices={"SENT","PAID","CANCELLED"}, message="Le status doit etre SENT , PAID ou CANCELLED"))
         
      */
     private $status;
@@ -93,7 +93,7 @@ class Invoice
      * @ORM\Column(type="integer")
      * @Groups({"invoices_read","customers_read"})
      * @Assert\NotBlank(message="Il  faut absolument un chrono pour la facture ")
-     *  @Assert\Type(type="integer", message="Le chrono doit etre un nombre !")
+     * @Assert\Type(type="integer", message="Le chrono doit etre un nombre !")
      
      */
     

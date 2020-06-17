@@ -63,9 +63,9 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="string", length=255)
-      * @Groups({"customers_read","invoices_read","invoices_subresource","users_read"}) // Invoices_read permet de préciser quelle entité on souhaite afficher au public
-       *@Assert\NotBlank(message="Le nom de famille est obligatoire")
-      *@Assert\Length(min=3, minMessage="Le nom  de famille doit faire entre 3 et 255 caractères ")
+    * @Groups({"customers_read","invoices_read","invoices_subresource","users_read"}) // Invoices_read permet de préciser quelle entité on souhaite afficher au public
+    * @Assert\NotBlank(message="Le nom de famille est obligatoire")
+    * @Assert\Length(min=3, minMessage="Le nom  de famille doit faire entre 3 et 255 caractères ")
      */
     private $lastName;
 

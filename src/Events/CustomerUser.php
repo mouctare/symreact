@@ -1,6 +1,6 @@
 <?php
 
-namespace App\EventSubscriber;
+namespace App\Events;
 use Symfony\Component\HttpKernel\Event;
 
 use Symfony\Component\HttpKernel\KernelEvents;
@@ -13,7 +13,6 @@ class CustomerUser implements EventSubscriberInterface
 {
     public static function getSubscribedEvents()
     {
-
         return [
             KernelEvents:: VIEW => ['setUserForCustomer', EventPriorities::PRE_VALIDATE]
         ];
@@ -21,7 +20,7 @@ class CustomerUser implements EventSubscriberInterface
 
     public function setUserForCustomer(ViewEvent $event) {
         $customer = $event->getControllerResult();
-        dd($customer);
+        
         $method = $event->getRequest()->getMethod();
         
         if($customer instanceof Customer && $method === 'POST') {
