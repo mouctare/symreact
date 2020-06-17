@@ -34,6 +34,7 @@ const RegisterPage = ({ history }) => {
     const apiErrors = {};
 
     if (user.password !== user.passwordConfirm) {
+      console.log( "password compare");
       apiErrors.passwordConfirm =
         "Votre confirmation de mot de passe n'est pas conforme avec le mot de passe original";
       setErrors(apiErrors);

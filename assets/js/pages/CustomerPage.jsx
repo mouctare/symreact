@@ -1,12 +1,12 @@
 import React,{useState,useEffect} from 'react';
-import {Link} from "react-router-dom";
 import Field from "../components/forms/Field";
+import {Link} from "react-router-dom";
 import CustomersAPI from "../services/CustomersAPI";
 import { toast } from 'react-toastify';
 import FormContentLoader from "../loaders/FormContentLoader";
 
 
-const CustomerPage = ({match,history}) => {
+const CustomerPage = ({history,match}) => {
     // Je vais sortir l'identifiant de mes params.
     const { id = "new" } = match.params;
 
@@ -16,24 +16,22 @@ const CustomerPage = ({match,history}) => {
         email: "",
         company: ""
     });
-   
+    const [loading, setLoading] = useState(false); 
+    const [editing, setEditing] = useState(false);
+
     const [errors, setErrors] = useState({
         lastName: "",
         firstName: "",
         email: "",
         company: ""
         
-    });
-    const [loading, setLoading] = useState(false);
-    
-    const [editing, setEditing] = useState(false);
+    });    
     
     // Récupération du customer en fonction de l'identifiant
     const fetchCustomer = async id => {
         try {
-            const { firstName,lastName,email, company} =  await CustomersAPI.find(
-                id
-                );
+            const { firstName,lastName,email, company} =  await CustomersAPI.find(id);
+            // Ici, je récupère que ces propriétée et je les donnes à mon nouveau customer  setCustomer({ firstName, lastName,email,company});
                 setCustomer({ firstName, lastName,email,company});
                 setLoading(false);
             } catch (error) {
@@ -51,8 +49,7 @@ const CustomerPage = ({match,history}) => {
                 setLoading(true);
                 setEditing(true);
                 fetchCustomer(id);
-            }
-            
+            }            
         }, [id]);
         
         // Gestion des changements des inputs dans le formulaires
@@ -62,27 +59,24 @@ const CustomerPage = ({match,history}) => {
         };
         // Gestion de la soummisssion du formulaire
         const handleSubmit = async event => {
-            event.preventDefault();
-            
+            event.preventDefault();            
             try {
-                setErrors({});
-                
+                setErrors({});                
             if(editing) {
                 // Si je suis en mode édition, je vais applé cette methode put
-                 await CustomersAPI.update(id, customer)
-                
+                 await CustomersAPI.update(id, customer)                
                     // TODO : flash notification de succés
                     toast.success("Le client a bien été modifié");
             } else {
-                await CustomersAPI.create(customer);
+             await CustomersAPI.create(customer);
                // TODO : flash notification de succés
                toast.success("Le client a bien été crée");
               history.replace("/customers");
-
             }
-
-            }catch({response}) {
-                const { violations } = response.data;
+          setErrors({})  
+        }catch ({ response }) {
+            
+            const { violations } = response.data;
            if(violations) {
                const apiErros = {};
                violations.forEach(({propertyPath, message}) => {
@@ -94,26 +88,24 @@ const CustomerPage = ({match,history}) => {
            }
         }
         
-    }
+    };
 
     return (
         <div className="container">
-             {(!editing && <h1>Création d'un client</h1>) || ( 
-             <h1>Modification du client</h1>
-             )}
+             {!editing && <h1>Création d'un client</h1> || <h1>Modification du client</h1>}
 
              {loading && <FormContentLoader />}
 
-              {!loading &&<form onSubmit={handleSubmit}>
+              {!loading && <form onSubmit={handleSubmit}>                          
                  <Field 
                  name="lastName" 
+                 placelholder="Nom de famille du client"                  
                  label="Nom de famille" 
-                 placelholder="Nom de famille du client" 
-                 value={customer.lastName}
                  onChange={handleChange}
+                 value={customer.lastName}               
                  error={errors.lastName}
                  />
-                 <Field 
+              <Field 
                  name="firstName" 
                  label="Prénom" 
                  placelholder="Prénom  du client" 
@@ -122,13 +114,13 @@ const CustomerPage = ({match,history}) => {
                   error={errors.firstName}
                  />
                  
-                 <Field 
-                 name="email" 
-                 label="Email" placelholder="Adresse email du client"   
-                  type="email" 
-                       value={customer.email}
-                       onChange={handleChange}
-                       error={errors.email}
+                <Field 
+                name="email" 
+                label="Email" placelholder="Adresse email du client"   
+                type="email" 
+                value={customer.email}
+                onChange={handleChange}
+                error={errors.email}
                   />
                  <Field
                   name="company" 
@@ -137,18 +129,15 @@ const CustomerPage = ({match,history}) => {
                   value={customer.company}
                   onChange={handleChange}
                   error={errors.company}
-                   />
+                   /> 
                  <div className="form-group">
                      <button type="submit" className="btn btn-success">Enregistrer</button>
                      <Link to="/customers" className="btn btn-link">Retour à la liste</Link>
                  </div>
               </form>
-              }
-              
+              }              
               </div>
-    );
-    
-
+    );    
 };
 
 
