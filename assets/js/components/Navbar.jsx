@@ -14,7 +14,7 @@ const Navbar = ({  history }) => {
   const handleLogout = () => {
     AuthAPI.logout();
     setIsAuthenticated(false);
-    toast.info("Vous ete désormais deconnecté 😁");
+    toast.info("Vous ete désormais deconnecté ");
     history.push('/login');
     
   };
